@@ -15,6 +15,8 @@ variables:
   containerRegistry: 'pmacr999.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
+  dockerId: pmacr999  # Replace with your Docker ID for Docker Hub or the admin user name for the Azure Container Registry
+  imageName: dockerimage99  # Replace with the name of the image you want to publish
   
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -38,4 +40,9 @@ stages:
         tags: |
           $(tag)
 steps:
-- script: docker build -t $(dockerId)/$(imageName) .  # add options to this command to meet your needs
+- script: |
+    docker build -t $(dockerId).azurecr.io/$(imageName) .
+    docker login -u $(dockerId) -p $(pswd) $(dockerId).azurecr.io
+    docker push $(dockerId).azurecr.io/$(imageName)
+  env:
+    pswd: $(dockerPassword)        # Define dockerPassword in the Variables tab of this pipeline in Pipelines page of web interface
